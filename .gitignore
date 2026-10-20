@@ -1,0 +1,7 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+test/.test-uploads/
+.env
+.vercel
+

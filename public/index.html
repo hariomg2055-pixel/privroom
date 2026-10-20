@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <title>PrivRoom — a private room in one link</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="landing-page">
+  <main class="landing">
+    <div class="hero-badge"><span class="badge-dot"></span> End-to-End Encrypted · Zero-Knowledge</div>
+    <div class="brand-mark" aria-hidden="true">🔒</div>
+    <h1>A private room in one link.</h1>
+    <p class="lede">Chat, share files and jump on a call. Everything is encrypted in your browser, so the server in the middle can't read any of it.</p>
+
+    <p id="insecure" class="notice warn" hidden>
+      This page is not in a secure context, so encryption and calls are disabled by the browser.
+      Open it via <strong>http://localhost:3000</strong> or an <strong>https://</strong> address.
+    </p>
+
+    <div class="cta">
+      <button id="create" class="btn primary big" type="button">Create a private room</button>
+    </div>
+
+    <form id="joinForm" class="join" autocomplete="off">
+      <label for="joinLink">Have an invite link?</label>
+      <div class="row">
+        <input id="joinLink" type="text" placeholder="Paste the full link here (including the part after #)" spellcheck="false" autocomplete="off">
+        <button class="btn primary" type="submit">Join room</button>
+      </div>
+      <p id="joinError" class="notice error" hidden></p>
+    </form>
+
+    <ul class="features">
+      <li>
+        <strong>🛡️ End-to-end encrypted</strong>
+        <span>AES-256-GCM. The key lives in the link's <code>#</code> part, which browsers never send to the server.</span>
+      </li>
+      <li>
+        <strong>📁 Files &amp; photos</strong>
+        <span>Encrypted on your device before upload. Up to 10 MB each, images preview inline.</span>
+      </li>
+      <li>
+        <strong>📹 Voice &amp; video</strong>
+        <span>Peer-to-peer WebRTC mesh for up to 4 people, with call signaling encrypted too.</span>
+      </li>
+      <li>
+        <strong>⏳ Ephemeral &amp; private</strong>
+        <span>No accounts. Disappearing messages and one-click room burn when you're done.</span>
+      </li>
+    </ul>
+
+    <p class="fineprint">Anyone who has the full link can read the room, so share it only with people you trust. Compare the room's <em>safety code</em> out loud to confirm everyone has the same key.</p>
+  </main>
+
+  <script src="/js/crypto.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

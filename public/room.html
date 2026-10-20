@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <title>PrivRoom — encrypted room</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="room-page">
+
+  <div id="fatal" class="fatal" hidden>
+    <div class="fatal-card">
+      <h2 id="fatalTitle">Can't open this room</h2>
+      <p id="fatalMsg"></p>
+      <a class="btn primary" href="/">Back to home</a>
+    </div>
+  </div>
+
+  <div id="app" class="app">
+    <div id="sideBackdrop" class="side-backdrop" aria-hidden="true"></div>
+
+    <aside id="side" class="side">
+      <div class="brand">
+        <div class="brand-left"><span aria-hidden="true" class="brand-icon">🔒</span> PrivRoom</div>
+        <span class="pill ok mini">E2EE</span>
+      </div>
+
+      <section class="panel">
+        <h3>Invite people</h3>
+        <p class="hint">The key is inside this link. Share it only with people you trust.</p>
+        <div class="row">
+          <input id="inviteLink" type="text" readonly spellcheck="false" aria-label="Invite link">
+          <button id="copyInvite" class="btn" type="button">Copy</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>Safety code</h3>
+        <p class="hint">Read this out loud to the others. If it matches, you all hold the same key.</p>
+        <div id="safetyCode" class="code" aria-live="polite">…</div>
+      </section>
+
+      <section class="panel grow">
+        <h3>In this room <span id="memberCount" class="count">0</span></h3>
+        <p class="hint">Each person signs their messages. The code under a name is their signing-key fingerprint: compare it out loud to be sure it's really them.</p>
+        <ul id="members" class="members"></ul>
+      </section>
+
+      <section class="panel sound-panel">
+        <button id="btnMuteSound" class="btn wide" type="button" aria-pressed="false" title="Notification sound is on (click to mute)">
+          <span id="soundIcon" aria-hidden="true">🔔</span>
+          <span id="soundLabel">Sound on</span>
+        </button>
+      </section>
+
+      <section class="panel danger-zone">
+        <button id="btnBurn" class="btn danger wide" type="button" disabled>🔥 Burn room</button>
+        <p class="hint small">Deletes every message and file from the server, for everyone, right now.</p>
+      </section>
+
+      <p class="hint small footer-note">End-to-end encrypted. The server only ever sees ciphertext.</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="sideToggle" class="btn icon" type="button" aria-label="Room info" aria-expanded="false">☰</button>
+        <div class="title">
+          <strong id="roomLabel">Room</strong>
+          <span id="statusPill" class="pill warn">Connecting…</span>
+        </div>
+        <div class="call-buttons">
+          <button id="btnXray" class="btn" type="button" aria-pressed="false" title="Show exactly what the server stores for each message">🔍 Server's view</button>
+          <span id="callBadge" class="pill live" hidden>● Call in progress</span>
+          <button id="btnVoice" class="btn" type="button" disabled>🎤 Voice call</button>
+          <button id="btnVideo" class="btn primary" type="button" disabled>📹 Video call</button>
+        </div>
+      </header>
+
+      <div id="xrayBanner" class="xray-banner" hidden>
+        <strong>Server's view is on.</strong> Under each message you can see what the server actually holds: only ciphertext.
+        Your browser decrypts it locally with a key the server never receives.
+      </div>
+
+      <section id="callStage" class="call-stage" hidden>
+        <div id="grid" class="grid"></div>
+        <div class="call-controls">
+          <button id="btnMute" class="btn round" type="button" aria-pressed="false">🎙️ Mute</button>
+          <button id="btnCam" class="btn round" type="button" aria-pressed="false">📷 Camera off</button>
+          <button id="btnShare" class="btn round" type="button" aria-pressed="false">🖥️ Share screen</button>
+          <button id="btnLeave" class="btn round danger" type="button">📞 Leave call</button>
+        </div>
+      </section>
+
+      <div id="dropZone" class="messages-wrap">
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <div class="drop-hint" id="dropHint" hidden>Drop to encrypt &amp; send</div>
+      </div>
+
+      <div id="typing" class="typing" aria-live="polite"></div>
+
+      <form id="composer" class="composer" autocomplete="off">
+        <button id="attach" class="btn icon" type="button" aria-label="Attach a file" disabled>📎</button>
+        <input id="fileInput" type="file" hidden>
+        <select id="ttlSelect" class="ttl" aria-label="Disappearing messages" title="Disappearing messages" disabled>
+          <option value="0">∞ Keep</option>
+          <option value="30">⏳ 30 sec</option>
+          <option value="300">⏳ 5 min</option>
+          <option value="3600">⏳ 1 hour</option>
+        </select>
+        <input id="textInput" type="text" placeholder="Write an encrypted message…" maxlength="4000" disabled>
+        <button id="sendBtn" class="btn primary" type="submit" disabled>Send</button>
+      </form>
+    </main>
+  </div>
+
+  <dialog id="nameDialog">
+    <form id="nameForm" method="dialog">
+      <h2>Join this room</h2>
+      <p class="hint">Your name is encrypted too, so the server never sees it.</p>
+      <label for="nameInput">Display name</label>
+      <input id="nameInput" type="text" maxlength="32" placeholder="e.g. Asha" autocomplete="nickname" spellcheck="false">
+      <div class="dialog-actions"><button class="btn primary" type="submit">Enter room</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="burnDialog">
+    <form id="burnForm" method="dialog">
+      <h2>Burn this room?</h2>
+      <p>This deletes every message and file from the server for <strong>everyone</strong> and ends the room. It can't be undone.</p>
+      <p class="hint">Copies already on people's devices (downloads, screenshots) stay there. Any member of a room can burn it.</p>
+      <div class="dialog-actions">
+        <button class="btn" type="submit" value="cancel">Cancel</button>
+        <button class="btn danger" type="submit" value="burn">🔥 Burn it</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/js/crypto.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/call.js"></script>
+  <script src="/js/room.js"></script>
+</body>
+</html>
